@@ -4,8 +4,28 @@ using UnityEngine;
 
 public struct Separation{
 	public Vector3 direction;
+	public float rot;
 	public int amnt;
 
+
+}
+
+public struct Steering{
+	public Vector3 vel;
+	public float rot;
+
+	public Steering(Vector3 n_vel, float n_rot){
+		vel = n_vel;
+		rot = n_rot;
+	}
+
+	public static Steering operator+(Steering lhs, Steering rhs){
+		return new Steering(lhs.vel + rhs.vel, (lhs.rot + rhs.rot) % 360.0f);
+	}
+
+	public static Steering operator*(Steering lhs, float rhs){
+		return new Steering(lhs.vel *rhs, (lhs.rot *rhs) % 360.0f);
+	}
 
 }
 
@@ -31,7 +51,11 @@ public class Movement : MonoBehaviour {
 	Vector3 F_Separation;
 	[SerializeField] float F_Radius = 4f;
 	public GameObject FLOCK_CENTER;
+	[SerializeField] private float Repultion_Strength = 5f;
 	[SerializeField] private float Separation_Weight = 1f;
+	[SerializeField] private float Cohesion_Weight = 1f;
+	[SerializeField] private float GroupVel_Weight = 1f;
+	[SerializeField] private float Target_Weight = 1f;
 	[SerializeField] bool cone = false;
 	[SerializeField] float CollisioPredictionWeight = 2f;
 
@@ -71,34 +95,39 @@ public class Movement : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		Vector3 vel;
-
+		//Vector3 vel;
+		Steering s;
 
 
 		switch (_state) {
 
 		case Type.pursue:
-			Pursue (_target);
-
+			
+			s = Pursue (_target);
+			move (s.vel,s.rot);
 			break;
 		case Type.align:
-			Align(_target.transform.position);
+			float tempRoatation = Align(_target.transform.position);
+			move (Vector3.zero,tempRoatation);
 			break;
 
 		case Type.arrive:
 
-			Arrive (_target.transform.position);
+			s = Arrive (_target.transform.position);
+			move (s.vel,s.rot);
 
 			break;
 
 		case Type.evade:
-			Evade (_target);
+			s = Evade (_target);
+			move (s.vel,s.rot);
 
 
 			break;
 
 		case Type.wander:
-			Wander (_target);
+			s = Wander (_target);
+			move (s.vel,s.rot);
 
 
 			break;
@@ -114,18 +143,20 @@ public class Movement : MonoBehaviour {
 			_state = Type.followPath;
 			break;
 		case Type.followPath:
-			FollowPath (_path);
+			s = FollowPath (_path);
+			move (s.vel,s.rot);
 			break;
 
 		case Type.flock:
 
-			Separation s = CalculateSeperation (FLOCK_ID, F_Radius);
-			F_Separation = s.direction;
+			s = CalculateSeperation (FLOCK_ID, F_Radius) * Separation_Weight;
+			//F_Separation = s.direction;
 
 
-			Pursue (FLOCK_CENTER);
+			s += Pursue (FLOCK_CENTER) * Cohesion_Weight;
+			s += Pursue (_target) * Target_Weight;
 			//Seek ((F_Separation)* s.amnt * Separation_Weight);
-			Pursue (_target);
+			
 
 			if (cone) {
 
@@ -133,6 +164,19 @@ public class Movement : MonoBehaviour {
 				collisionPrediction (FLOCK_ID, F_Radius * 10f);
 			}
 
+			if (s.vel.magnitude > maxSpeed) {
+				s.vel.Normalize ();
+				s.vel *= maxSpeed;
+			}
+
+			float angularAcceleration = Mathf.Abs (s.rot);
+			if (angularAcceleration > maxAngularAcceleration) {
+				s.rot /= angularAcceleration;
+				s.rot *= maxAngularAcceleration;
+			}
+
+			move (s.vel, s.rot);
+			//move ();
 			break;
 
 		case Type.none:
@@ -146,14 +190,14 @@ public class Movement : MonoBehaviour {
 
 	}
 
-	void collisionPrediction(int id, float radius){
+	Steering collisionPrediction(int id, float radius){
 		float dist = Mathf.Infinity;
 		Movement closest = null;
 		Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius);
 		for (int i = 0; i < hitColliders.Length; i++) {
 			Movement tempM = hitColliders [i].gameObject.GetComponent<Movement> ();
 			if (tempM != null) {
-				if (tempM.FLOCK_ID != FLOCK_ID) {
+				if (tempM.FLOCK_ID != FLOCK_ID && tempM.FLOCK_ID != -1) {
 					if (Mathf.Abs ((-tempM.gameObject.transform.position + transform.position).magnitude) < dist) {
 						closest = tempM;
 					}
@@ -165,22 +209,29 @@ public class Movement : MonoBehaviour {
 
 		}
 		if (closest != null) {
-			Flee (closest.gameObject.transform.position);
+			return Flee (closest.gameObject.transform.position);
+
 		}
+		return new Steering (Vector3.zero, transform.rotation.eulerAngles.y);
 	}
 
-	Separation CalculateSeperation (int id, float radius){
+	Steering CalculateSeperation (int id, float radius){
 
 		Vector3 separation = Vector3.zero;
 		int boidz = 0;
+		//Movement closest;
 		Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius);
 		for (int i = 0; i < hitColliders.Length; i++) {
 			Movement tempM = hitColliders [i].gameObject.GetComponent<Movement> ();
-			if (tempM != null) {
+			if (tempM != null && tempM.gameObject != gameObject) {
 				if (tempM.FLOCK_ID == FLOCK_ID) {
 					//print ("BiRD HIT");
-					Flee (tempM.gameObject.transform.position );
-					separation += (-tempM.gameObject.transform.position + transform.position) * Mathf.Abs((-tempM.gameObject.transform.position + transform.position).magnitude);
+					//Flee (tempM.gameObject.transform.position );
+					//separation += (-tempM.gameObject.transform.position + transform.position) * Mathf.Abs((-tempM.gameObject.transform.position + transform.position).magnitude);
+
+					Vector3 tempDirection = tempM.gameObject.transform.position - transform.position;
+					float lenSq = tempDirection.sqrMagnitude;
+					separation += Repultion_Strength/lenSq * tempDirection;
 					boidz += 1;
 				}
 
@@ -188,12 +239,13 @@ public class Movement : MonoBehaviour {
 
 		}
 
-		separation /= boidz;
+		//separation /= boidz;
 		//todo return calculated separation vector
-		return new Separation{direction = separation, amnt = boidz};
+		//return new Separation{direction = separation, amnt = boidz};
+		return Flee(separation + transform.position);
 	}
 
-	void SeekPath(Vector3 target){
+	Steering SeekPath(Vector3 target){
 		Vector3 vel = target - transform.position;
 		if (vel.magnitude < slowRadius) {
 			//_state = Type.arrive;
@@ -203,15 +255,17 @@ public class Movement : MonoBehaviour {
 			vel.Normalize ();
 			vel *= maxSpeed;
 		}
-		Face (target);
-		//transform.rotation = Quaternion.Euler (0f, getNewOrientation (transform.rotation.eulerAngles, vel), 0f);
-		move (vel,   0   );
+		//Face (target);
 		Debug.DrawLine (transform.position, target, Color.blue);
+
+		//transform.rotation = Quaternion.Euler (0f, getNewOrientation (transform.rotation.eulerAngles, vel), 0f);
+		return new Steering (vel, Face(target));
+		//move (vel,   0   );
 
 	}
 
 
-	void Seek(Vector3 target){
+	Steering Seek(Vector3 target){
 		Vector3 vel = target - transform.position;
 		if (vel.magnitude < slowRadius) {
 			_state = Type.arrive;
@@ -222,13 +276,14 @@ public class Movement : MonoBehaviour {
 			vel.Normalize ();
 			vel *= maxSpeed;
 		}
-		Face (target);
+		//Face (target);
 		//transform.rotation = Quaternion.Euler (0f, getNewOrientation (transform.rotation.eulerAngles, vel), 0f);
-		move (vel,   0   );
+		//move (vel,   0   );
+		return new Steering (vel, Face(target));
 
 	}
 
-	void Flee(Vector3 target){
+	Steering Flee(Vector3 target){
 		Vector3 vel = -target + transform.position;
 
 
@@ -239,13 +294,14 @@ public class Movement : MonoBehaviour {
 		}
 
 		//transform.rotation = Quaternion.Euler (0f, getNewOrientation (transform.rotation.eulerAngles, vel), 0f);
-		Face(-target);
-		move (vel,   0   );
-		Debug.DrawLine (transform.position, target, Color.grey);
+		//Face(-target);
+		//move (vel,   0   );
+		Debug.DrawLine (transform.position, target, Color.yellow);
+		return new Steering (vel, Face(-target));
 
 	}
 
-	void Pursue(GameObject target){
+	Steering Pursue(GameObject target){
 		Vector3 direction = target.transform.position - transform.position;
 		float dist = direction.magnitude;
 		float speed = cVel.magnitude;
@@ -264,13 +320,14 @@ public class Movement : MonoBehaviour {
 			tVel = temp.Avg_Vel;
 
 		}
-		Face (target.transform.position);
-		Seek (target.transform.position + tVel * preditction);
+		//Face (target.transform.position);
+		//Seek (target.transform.position + tVel * preditction);
+		return Seek(target.transform.position + tVel * preditction);
 		Debug.DrawLine (transform.position, target.transform.position + tVel * preditction, Color.red);
 
 	}
 
-	void Arrive(Vector3 target){
+	Steering Arrive(Vector3 target){
 
 		Vector3 vel = target - transform.position;
 		float dist = vel.magnitude;
@@ -278,7 +335,7 @@ public class Movement : MonoBehaviour {
 			_state = Type.pursue;
 		}
 		if (dist < targetRadius) {
-			return;
+			return new Steering(Vector3.zero, transform.rotation.eulerAngles.y);
 		}
 
 		float targetSpeed = maxSpeed * dist / slowRadius;
@@ -287,12 +344,13 @@ public class Movement : MonoBehaviour {
 		vel = vel - cVel;
 		vel /= timeToTarget;
 
-		Face (target);
+		//Face (target);
 		//transform.rotation = Quaternion.Euler (0f, getNewOrientation (transform.rotation.eulerAngles, vel), 0f);
-		move (vel,   0   );
+		//move (vel,   0   );
+		return new Steering (vel, Face(target));
 	}
 
-	void Evade(GameObject target){
+	Steering Evade(GameObject target){
 		Vector3 direction = target.transform.position - transform.position;
 		float dist = direction.magnitude;
 		float speed = cVel.magnitude;
@@ -309,12 +367,12 @@ public class Movement : MonoBehaviour {
 			tVel = temp.cVel;
 		}
 
-		Flee (target.transform.position + tVel * preditction);
+		return Flee (target.transform.position + tVel * preditction);
 
 
 	}
 
-	void Wander(GameObject targetG){
+	Steering Wander(GameObject targetG){
 
 		wanderOrientation += randomBinomial () * wanderRate;
 		float targetOrientation = wanderOrientation + transform.rotation.eulerAngles.y;
@@ -322,21 +380,22 @@ public class Movement : MonoBehaviour {
 		Vector3 target = transform.position + wanderOffset * transform.forward;
 		//print ("target position before: " + target);
 		target += wanderRange * new Vector3 (Mathf.Cos(Mathf.Deg2Rad * targetOrientation), 0, Mathf.Sin(Mathf.Deg2Rad * targetOrientation));
-		Face (target);
+		//Face (target);
 
 		Debug.DrawLine (transform.position, target, Color.green);
 		//print ("target position: " + target);
 		//print ("current position " + transform.position);
 		//transform.rotation = Quaternion.Euler (0f, transform.rotation.eulerAngles.y + randomBinomial () * wanderRange, 0f);
-		move (transform.forward * maxSpeed,0);
+		//move (transform.forward * maxSpeed,0);
 		if ((targetG.transform.position - transform.position).magnitude < persueDetectRange) {
 			_state = Type.pursue;
 
 		}
+		return new Steering (transform.forward * maxSpeed, Face(target));
 
 	}
 
-	void Align(Vector3 target){
+	float Align(Vector3 target){
 		float trot = getNewOrientation (transform.rotation.eulerAngles, target - transform.position);
 		//print (trot);
 		float rotation = (trot - transform.rotation.eulerAngles.y) % 360f;
@@ -356,7 +415,7 @@ public class Movement : MonoBehaviour {
 		float rotationSize = Mathf.Abs (rotation);
 		if (rotationSize < targetRadius) {
 			cRot = 0f;
-			return;
+			return transform.rotation.eulerAngles.y;
 		}
 		float targetRotation;
 		if (rotationSize > slowRangeDeg) {
@@ -376,27 +435,29 @@ public class Movement : MonoBehaviour {
 			sAngular /= angularAcceleration;
 			sAngular *= maxAngularAcceleration;
 		}
-		move (Vector3.zero, sAngular);
+		//move (Vector3.zero, sAngular);
+		return sAngular;
 
 
 	}
 
-	void Face(Vector3 target){
-		Align (target);
+	float Face(Vector3 target){
+		return Align (target);
 
 	}
 
-	void FollowPath(Transform[] path){
+	Steering FollowPath(Transform[] path){
 		float dist = (transform.position - path [_pathIndex].position).magnitude;
 		if (dist < targetRadius * 4) {
 			_pathIndex += 1;
 		}
 		if (_pathIndex < path.Length - 1) {
-			SeekPath (path [_pathIndex].position);
+			return SeekPath (path [_pathIndex].position);
 		} else if(_pathIndex < path.Length){
-			Seek (path [_pathIndex].position);
+			return Seek (path [_pathIndex].position);
 		}else {
 			_state = Type.none;
+			return new Steering (Vector3.zero, transform.rotation.eulerAngles.y);
 		}
 
 	}
