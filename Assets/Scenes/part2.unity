@@ -399,6 +399,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -480,6 +485,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -560,6 +570,11 @@ Prefab:
         type: 2}
       propertyPath: maxSpeed
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -727,6 +742,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -808,6 +828,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -888,6 +913,11 @@ Prefab:
         type: 2}
       propertyPath: maxSpeed
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -1080,6 +1110,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -1160,6 +1195,11 @@ Prefab:
         type: 2}
       propertyPath: maxSpeed
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -1470,6 +1510,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -1631,6 +1676,11 @@ Prefab:
         type: 2}
       propertyPath: maxSpeed
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -2165,6 +2215,11 @@ Prefab:
       propertyPath: maxSpeed
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
   m_IsPrefabAsset: 0
@@ -2469,6 +2524,11 @@ Prefab:
         type: 2}
       propertyPath: maxSpeed
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
+        type: 2}
+      propertyPath: cone
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
