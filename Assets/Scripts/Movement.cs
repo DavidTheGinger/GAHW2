@@ -58,7 +58,7 @@ public class Movement : MonoBehaviour {
 	[SerializeField] private float Target_Weight = 1f;
 	[SerializeField] bool cone = false;
 	[SerializeField] float CollisioPredictionWeight = 2f;
-
+	[SerializeField] float AngleOfPerception = 30f;
 
 
 	public Type _state = Type.wander;
@@ -72,8 +72,8 @@ public class Movement : MonoBehaviour {
 	float wanderOrientation = 0f;
 	public float persueDetectRange = 5f;
 	float maxPrediction = 5f;
-	float maxAngularAcceleration = 50f;
-	float maxRotation = 50f;
+	float maxAngularAcceleration = 90f;
+	float maxRotation = 120f;
 
 	public Transform[] _path;
 	int _pathIndex = 0;
@@ -144,6 +144,7 @@ public class Movement : MonoBehaviour {
 			break;
 		case Type.followPath:
 			s = FollowPath (_path);
+
 			move (s.vel,s.rot);
 			break;
 
@@ -159,7 +160,7 @@ public class Movement : MonoBehaviour {
 			
 
 			if (cone) {
-
+				s += ConeCheck (FLOCK_ID, F_Radius) * Separation_Weight;
 			} else {
 				collisionPrediction (FLOCK_ID, F_Radius * 10f);
 			}
@@ -174,7 +175,7 @@ public class Movement : MonoBehaviour {
 				s.rot /= angularAcceleration;
 				s.rot *= maxAngularAcceleration;
 			}
-
+			s.rot = Face (_target.transform.position);
 			move (s.vel, s.rot);
 			//move ();
 			break;
@@ -198,6 +199,8 @@ public class Movement : MonoBehaviour {
 			Movement tempM = hitColliders [i].gameObject.GetComponent<Movement> ();
 			if (tempM != null) {
 				if (tempM.FLOCK_ID != FLOCK_ID && tempM.FLOCK_ID != -1) {
+
+
 					if (Mathf.Abs ((-tempM.gameObject.transform.position + transform.position).magnitude) < dist) {
 						closest = tempM;
 					}
@@ -214,6 +217,40 @@ public class Movement : MonoBehaviour {
 		}
 		return new Steering (Vector3.zero, transform.rotation.eulerAngles.y);
 	}
+
+	Steering ConeCheck (int id, float radius){
+
+		Vector3 separation = Vector3.zero;
+		int boidz = 0;
+		//Movement closest;
+		Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius);
+		for (int i = 0; i < hitColliders.Length; i++) {
+			Movement tempM = hitColliders [i].gameObject.GetComponent<Movement> ();
+			if (tempM != null && tempM.gameObject != gameObject) {
+				if(Mathf.Abs(Vector3.Angle(transform.forward, tempM.transform.position - transform.position)) < AngleOfPerception){
+					if (tempM.FLOCK_ID != FLOCK_ID && tempM.FLOCK_ID != -1f) {
+						//print ("BiRD HIT");
+						//Flee (tempM.gameObject.transform.position );
+						//separation += (-tempM.gameObject.transform.position + transform.position) * Mathf.Abs((-tempM.gameObject.transform.position + transform.position).magnitude);
+
+						Vector3 tempDirection = tempM.gameObject.transform.position - transform.position;
+						float lenSq = tempDirection.sqrMagnitude;
+						separation += Repultion_Strength/lenSq * tempDirection;
+						boidz += 1;
+					}
+				}
+
+			}
+
+		}
+
+		//separation /= boidz;
+		//todo return calculated separation vector
+		//return new Separation{direction = separation, amnt = boidz};
+		return Flee(separation + transform.position);
+	}
+
+
 
 	Steering CalculateSeperation (int id, float radius){
 
