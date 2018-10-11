@@ -56,7 +56,6 @@ public class Movement : MonoBehaviour {
 	[SerializeField] private float Cohesion_Weight = 1f;
 	[SerializeField] private float GroupVel_Weight = 1f;
 	[SerializeField] private float Target_Weight = 1f;
-	[SerializeField] bool cone = false;
 	[SerializeField] float CollisioPredictionWeight = 2f;
 	[SerializeField] float AngleOfPerception = 30f;
 
@@ -161,7 +160,7 @@ public class Movement : MonoBehaviour {
 			//Seek ((F_Separation)* s.amnt * Separation_Weight);
 			
 
-			if (cone) {
+			if (AvoidanceSelector.avoidanceMode) {
 				s += ConeCheck (FLOCK_ID, F_Radius * 2) * Separation_Weight;
 			} else {
 				collisionPrediction (FLOCK_ID, F_Radius * 10f);
