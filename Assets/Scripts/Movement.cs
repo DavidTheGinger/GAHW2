@@ -86,10 +86,12 @@ public class Movement : MonoBehaviour {
 	float cRot = 0f;
 	public GameObject _target;
 
+    private SphereCollider collider;
+
 	float rotationCooldown = 20f;
 	// Use this for initialization
 	void Start () {
-
+        collider = GetComponent<SphereCollider>();
 	}
 
 	// Update is called once per frame
@@ -160,7 +162,7 @@ public class Movement : MonoBehaviour {
 			
 
 			if (cone) {
-				s += ConeCheck (FLOCK_ID, F_Radius) * Separation_Weight;
+				s += ConeCheck (FLOCK_ID, F_Radius * 2) * Separation_Weight;
 			} else {
 				collisionPrediction (FLOCK_ID, F_Radius * 10f);
 			}
@@ -195,25 +197,45 @@ public class Movement : MonoBehaviour {
 		float dist = Mathf.Infinity;
 		Movement closest = null;
 		Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius);
-		for (int i = 0; i < hitColliders.Length; i++) {
+		float minTime = Mathf.Infinity;
+        float minSeparation = Mathf.Infinity;
+        float distance = -1;
+        Vector3 relativePos = Vector3.zero;
+        Vector3 relativeVel = Vector3.zero;
+        for (int i = 0; i < hitColliders.Length; i++) {
 			Movement tempM = hitColliders [i].gameObject.GetComponent<Movement> ();
 			if (tempM != null) {
 				if (tempM.FLOCK_ID != FLOCK_ID && tempM.FLOCK_ID != -1) {
+                    Vector3 rp = tempM.transform.position - transform.position;
+                    Vector3 rv = tempM.getVel() - getVel();
+                    float relativeSpeed = rv.sqrMagnitude;
+                    float collisionTime = Vector3.Dot(rp, rv)/relativeSpeed;
 
-
-					if (Mathf.Abs ((-tempM.gameObject.transform.position + transform.position).magnitude) < dist) {
-						closest = tempM;
-					}
-					//Flee (tempM.gameObject.transform.position );
-
+                    float relativeDist = rp.magnitude;
+                    float ms = relativeDist - relativeSpeed * minTime;
+                    if (minTime > 2 * collider.radius) {
+                        continue;
+                    }
+                    
+                    if(collisionTime > 0 && collisionTime < minTime) {
+                        minTime = collisionTime;
+                        minSeparation = ms;
+                        distance = relativeDist;
+                        relativePos = rp;
+                        relativeVel = rv;
+                        closest = tempM;
+                    }
 				}
-
 			}
-
 		}
 		if (closest != null) {
-			return Flee (closest.gameObject.transform.position);
-
+			if (minSeparation <= 0 || distance <= 2 * collider.radius) {
+                relativePos = closest.transform.position - transform.position;
+            } else {
+                relativePos = relativePos + relativeVel * minTime;
+            }
+            
+            return Flee(transform.position + relativePos);
 		}
 		return new Steering (Vector3.zero, transform.rotation.eulerAngles.y);
 	}
@@ -359,9 +381,8 @@ public class Movement : MonoBehaviour {
 		}
 		//Face (target.transform.position);
 		//Seek (target.transform.position + tVel * preditction);
+        Debug.DrawLine (transform.position, target.transform.position + tVel * preditction, Color.red);
 		return Seek(target.transform.position + tVel * preditction);
-		Debug.DrawLine (transform.position, target.transform.position + tVel * preditction, Color.red);
-
 	}
 
 	Steering Arrive(Vector3 target){

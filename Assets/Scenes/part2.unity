@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -402,7 +402,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -488,7 +488,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -574,7 +574,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -745,7 +745,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -831,7 +831,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -917,7 +917,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -1113,7 +1113,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -1199,7 +1199,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -1275,7 +1275,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 712076272}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 70, z: 0}
+  m_LocalPosition: {x: 0, y: 94.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1513,7 +1513,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -1680,7 +1680,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -2218,7 +2218,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
@@ -2528,7 +2528,7 @@ Prefab:
     - target: {fileID: 114304510750649852, guid: 5e610a7f7edd05a46a43b3c9300c6e91,
         type: 2}
       propertyPath: cone
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e610a7f7edd05a46a43b3c9300c6e91, type: 2}
