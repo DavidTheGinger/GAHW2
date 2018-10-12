@@ -175,7 +175,7 @@ public class Movement : MonoBehaviour {
 			if (AvoidanceSelector.avoidanceMode) {
 				s += ConeCheck (FLOCK_ID, F_Radius * 2) * Separation_Weight;
 			} else {
-				collisionPrediction (FLOCK_ID, F_Radius * 10f);
+				s += collisionPrediction (FLOCK_ID, F_Radius * 2) * Separation_Weight;
 			}
 
 			if (s.vel.magnitude > maxSpeed) {
@@ -252,30 +252,28 @@ public class Movement : MonoBehaviour {
     }
 
 	Steering collisionPrediction(int id, float radius){
-		float dist = Mathf.Infinity;
 		Movement closest = null;
 		Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius);
 		float minTime = Mathf.Infinity;
         float minSeparation = Mathf.Infinity;
-        float distance = -1;
+        float distance = Mathf.Infinity;
         Vector3 relativePos = Vector3.zero;
         Vector3 relativeVel = Vector3.zero;
         for (int i = 0; i < hitColliders.Length; i++) {
-			Movement tempM = hitColliders [i].gameObject.GetComponent<Movement> ();
+			Movement tempM = hitColliders[i].gameObject.GetComponent<Movement> ();
 			if (tempM != null) {
 				if (tempM.FLOCK_ID != FLOCK_ID && tempM.FLOCK_ID != -1) {
                     Vector3 rp = tempM.transform.position - transform.position;
                     Vector3 rv = tempM.getVel() - getVel();
-                    float relativeSpeed = rv.sqrMagnitude;
-                    float collisionTime = Vector3.Dot(rp, rv)/relativeSpeed;
+                    float relativeSpeed = rv.magnitude;
+                    float collisionTime = -Vector3.Dot(rp, rv)/(relativeSpeed * relativeSpeed);
 
-                    float relativeDist = rp.magnitude;
-                    float ms = relativeDist - relativeSpeed * minTime;
-                    if (minTime > 2 * collider.radius) {
-                        continue;
-                    }
-                    
                     if(collisionTime > 0 && collisionTime < minTime) {
+                        float relativeDist = rp.magnitude;
+                        float ms = relativeDist - relativeSpeed * collisionTime;
+                        if (ms > 2 * collider.radius) {
+                            continue;
+                        }
                         minTime = collisionTime;
                         minSeparation = ms;
                         distance = relativeDist;
@@ -413,7 +411,7 @@ public class Movement : MonoBehaviour {
 		//transform.rotation = Quaternion.Euler (0f, getNewOrientation (transform.rotation.eulerAngles, vel), 0f);
 		//Face(-target);
 		//move (vel,   0   );
-		Debug.DrawLine (transform.position, target, Color.yellow);
+		Debug.DrawLine (transform.position, target, Color.green);
 		return new Steering (vel, Face(-target));
 
 	}
