@@ -58,12 +58,13 @@ public class Movement : MonoBehaviour {
 	[SerializeField] private float Target_Weight = 1f;
 	[SerializeField] float CollisioPredictionWeight = 2f;
 	[SerializeField] float AngleOfPerception = 30f;
+    [SerializeField] private bool raycastOnPath = false;
 
 
 	public Type _state = Type.wander;
 	public float maxSpeed = 2f;
 	[SerializeField] float slowRadius = 6f;
-	float targetRadius = 1f;
+	[SerializeField] float targetRadius = 1f;
 	float wanderSpeed = 1f;
 	float wanderRange = 100f;
 	float wanderRate = 20f;
@@ -79,11 +80,15 @@ public class Movement : MonoBehaviour {
 
 	float slowRangeDeg = 20f;
 
-	float timeToTarget = 0.25f;
+	[SerializeField]float timeToTarget = 0.25f;
 
 	Vector3 cVel;
 	float cRot = 0f;
 	public GameObject _target;
+
+    [SerializeField] private float raycastHoriz;
+    [SerializeField] private float raycastLength;
+    [SerializeField] private float rayAvoidDistance;
 
     private SphereCollider collider;
 
@@ -144,7 +149,14 @@ public class Movement : MonoBehaviour {
 			_state = Type.followPath;
 			break;
 		case Type.followPath:
-			s = FollowPath (_path);
+            s = FollowPath (_path);
+        
+            if (raycastOnPath) {
+                Steering rayOut = RaycastAvoid();
+                if (rayOut.vel.sqrMagnitude >= Mathf.Epsilon) {
+			        s = rayOut;
+                }
+            }
 
 			move (s.vel,s.rot);
 			break;
@@ -191,6 +203,53 @@ public class Movement : MonoBehaviour {
 
 
 	}
+
+    Steering RaycastAvoid()
+    {
+        Vector3 vel = getVel();
+        if (vel.sqrMagnitude < Mathf.Epsilon) {
+            vel = transform.forward;
+        }
+        
+        Quaternion rotation = Quaternion.LookRotation(vel, transform.up);
+        Vector3[] rays = new Vector3[]{
+            transform.position + rotation * new Vector3(raycastHoriz, 0, 0),
+            transform.position + rotation * new Vector3(-raycastHoriz, 0, 0)
+        };
+        
+        RaycastHit[] hitData = new RaycastHit[2];
+        bool[] hits = new bool[]{false, false};
+
+        for (int i = 0; i < rays.Length; ++i) {
+            hits[i] = Physics.Raycast(rays[i], vel.normalized, out hitData[i], raycastLength);
+        }
+        RaycastHit hit;
+
+        if (hits[0] && hits[1]) {
+            Debug.DrawRay(rays[0], vel.normalized * raycastLength, Color.red);
+            Debug.DrawRay(rays[1], vel.normalized * raycastLength, Color.red);
+            Vector3[] hitRelativePoints = new Vector3[2];
+            hitRelativePoints[0] = hitData[0].point;
+            hitRelativePoints[1] = hitData[1].point;
+            hit = hitRelativePoints[0].sqrMagnitude <= hitRelativePoints[1].sqrMagnitude ? hitData[0] : hitData[1];
+        } else if(hits[0]) {
+            Debug.DrawRay(rays[0], vel.normalized * raycastLength, Color.red);
+            Debug.DrawRay(rays[1], vel.normalized * raycastLength, Color.blue);
+            hit = hitData[0];
+        } else if(hits[1]) {
+            Debug.DrawRay(rays[0], vel.normalized * raycastLength, Color.blue);
+            Debug.DrawRay(rays[1], vel.normalized * raycastLength, Color.red);
+            hit = hitData[1];
+        } else {
+            Debug.DrawRay(rays[0], vel.normalized * raycastLength, Color.blue);
+            Debug.DrawRay(rays[1], vel.normalized * raycastLength, Color.blue);
+            return new Steering(Vector3.zero, transform.rotation.eulerAngles.y);
+        }
+
+        Debug.DrawLine(transform.position, hit.point + hit.normal * rayAvoidDistance, Color.green, 0);
+
+        return SeekPath(hit.point + hit.normal * rayAvoidDistance);
+    }
 
 	Steering collisionPrediction(int id, float radius){
 		float dist = Mathf.Infinity;
