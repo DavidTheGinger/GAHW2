@@ -78,7 +78,8 @@ public class Movement : MonoBehaviour {
 	public Transform[] _path;
 	int _pathIndex = 0;
 
-	float slowRangeDeg = 20f;
+	float slowRangeDeg = 10f;
+	float targetDegRadius = 3f;
 
 	[SerializeField]float timeToTarget = 0.25f;
 
@@ -527,16 +528,23 @@ public class Movement : MonoBehaviour {
 		}
 		//print("needed rotation in degrees: " + rotation);
 		float rotationSize = Mathf.Abs (rotation);
-		if (rotationSize < targetRadius) {
+		if (rotationSize < targetDegRadius) {
 			cRot = 0f;
 			return transform.rotation.eulerAngles.y;
 		}
 		float targetRotation;
+		//Debug.Log ("ROTATIONSIZE: ");
 		if (rotationSize > slowRangeDeg) {
+			
 			targetRotation = maxRotation;
+			//Debug.Log ("TARGETROTATION 1: " + targetRotation);
+			//print("1");
 		} else {
-			targetRotation = maxRotation * rotationSize / slowRangeDeg;
+			targetRotation = -maxRotation * rotationSize / slowRangeDeg;
+			//Debug.Log ("TARGETROTATION 2: " + targetRotation);
+			//print("2");
 		}
+		//Debug.Log ("Test");
 		targetRotation *= rotation / rotationSize;
 		//print ("target rotation: " + targetRotation);
 		//float sAngular = targetRotation - transform.rotation.eulerAngles.y;
